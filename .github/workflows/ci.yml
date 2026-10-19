@@ -1,0 +1,57 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  quality:
+    name: Lint, Test & Build
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Repository auschecken
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: uv installieren
+        uses: astral-sh/setup-uv@v5
+        with:
+          enable-cache: true
+
+      - name: Abhängigkeiten installieren
+        run: uv sync --frozen
+
+      - name: Codequalität mit Ruff prüfen
+        run: uv run ruff check .
+
+      - name: Tests mit Coverage ausführen
+        run: uv run pytest --cov=src/blog --cov-report=term-missing --cov-report=xml
+
+      - name: Coverage-Artefakt hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage.xml
+          if-no-files-found: error
+
+      - name: Docker Buildx einrichten
+        uses: docker/setup-buildx-action@v3
+
+      - name: Container-Image bauen
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          tags: flask-blog:ci-${{ github.sha }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max

@@ -9,3 +9,5 @@ instance/
 .vscode/*
 !.vscode/settings.json
 !.vscode/extensions.json
+.coverage
+.python-version
