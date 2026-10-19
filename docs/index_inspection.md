@@ -1,0 +1,72 @@
+# Dateiinspektion
+
+## Dateidetails
+
+## Datei-Inspektion
+
+- date_pfad: `/Users/rechenzentrum/Dev/bsc_SWE/DLBSEPDOCD01_D/sample_flask_blog/templates/index.html`
+- date_absolut: `/Users/rechenzentrum/Dev/bsc_SWE/DLBSEPDOCD01_D/sample_flask_blog/templates/index.html`
+- dateityp: HTML-Datei
+- zeilenanzahl: 49
+
+### HTML-Kommentare
+
+- anzahl_kommentare: 1
+
+#### Kommentar 1
+
+Startseiten Template für den Mini-Blog mit Region für Posts
+
+### Vollständiger Dateiinhalt
+
+```html
+<!DOCTYPE html>
+<!-- Startseiten Template für den Mini-Blog mit Region für Posts -->
+<html>
+<head>
+    <title>Mini Blog</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background-color: #f4f7f9; }
+        .post { 
+            border: 1px solid #ddd; 
+            padding: 15px; 
+            margin-bottom: 15px; 
+            border-radius: 8px; 
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        .post h3 { color: #333; margin-top: 0; }
+        .top { 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            border-bottom: 2px solid #007bff; 
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+        }
+        .top h1 { margin: 0; }
+        a { text-decoration: none; color: #007bff; font-weight: bold; }
+        a:hover { text-decoration: underline; color: #0056b3; }
+    </style>
+</head>
+<body>
+
+    <div class="top">
+        <h1>Mini Blog Posts</h1>
+        <a href="/new">Write New Post &rarr;</a>
+    </div>
+
+    {% for post in posts %}
+    <div class="post">
+        <h3>{{ post[1] }}</h3>
+        <p>{{ post[2] }}</p>
+    </div>
+    {% endfor %}
+
+    {% if not posts %}
+    <p style="color: #6c757d;">No posts yet. Start writing your first entry!</p>
+    {% endif %}
+
+</body>
+</html>
+```
