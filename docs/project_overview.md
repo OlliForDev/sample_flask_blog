@@ -3,9 +3,9 @@
 ## Metadaten
 
 - projekt_pfad: `/Users/rechenzentrum/Dev/bsc_SWE/DLBSEPDOCD01_D/sample_flask_blog`
-- erstellt_am: 2026-10-21 09:29:49
-- anzahl_dateien: 18
-- anzahl_zeilen_gesamt: 1136
+- erstellt_am: 2026-10-22 22:59:08
+- anzahl_dateien: 21
+- anzahl_zeilen_gesamt: 1262
 
 ## Einstiegspunkte
 
@@ -26,8 +26,12 @@
 ```text
 /Users/rechenzentrum/Dev/bsc_SWE/DLBSEPDOCD01_D/sample_flask_blog
 ├── .github
-│   └── workflows
-│       └── ci.yml
+│   ├── workflows
+│   │   └── ci.yml
+│   └── .DS_Store
+├── migrations
+│   ├── 001_create_posts.py
+│   └── 002_add_created_at.py
 ├── src
 │   ├── blog
 │   │   ├── templates
@@ -37,10 +41,12 @@
 │   │   ├── app.py
 │   │   ├── db.py
 │   │   └── validation.py
-│   └── instance
+│   ├── instance
+│   └── .DS_Store
 ├── tests
 │   ├── conftest.py
 │   ├── test_app.py
+│   ├── test_migrations.py
 │   ├── test_post_routes.py
 │   └── test_validation.py
 ├── .coverage
@@ -54,7 +60,7 @@
 ├── README.md
 └── uv.lock
 
-8 directories, 21 files
+9 directories, 26 files
 ```
 
 ## Dateibeschreibungen
@@ -67,7 +73,7 @@
 ### `.gitignore`
 
 - **Typ:** Datei (ohne Erweiterung)
-- **Zeilen:** 13
+- **Zeilen:** 17
 - **Erste Inhaltszeile:** .venv/
 
 ### `.pre-commit-config.yaml`
@@ -85,7 +91,7 @@
 ### `Dockerfile`
 
 - **Typ:** Docker-Konfiguration
-- **Zeilen:** 24
+- **Zeilen:** 25
 - **Erste Inhaltszeile:** FROM python:3.13-slim
 
 ### `README.md`
@@ -94,10 +100,22 @@
 - **Zeilen:** 94
 - **Erste Inhaltszeile:** # Sample Flask Blog
 
+### `migrations/001_create_posts.py`
+
+- **Typ:** Python-Modul
+- **Zeilen:** 14
+- **Imports:** from yoyo import step
+
+### `migrations/002_add_created_at.py`
+
+- **Typ:** Python-Modul
+- **Zeilen:** 11
+- **Imports:** from yoyo import step
+
 ### `pyproject.toml`
 
 - **Typ:** TOML-Konfiguration
-- **Zeilen:** 40
+- **Zeilen:** 44
 - **Erste Inhaltszeile:** [project]
 
 ### `src/blog/__init__.py`
@@ -109,16 +127,16 @@
 ### `src/blog/app.py`
 
 - **Typ:** Python-Modul
-- **Zeilen:** 63
-- **Imports:** from contextlib import closing, from flask import Flask, redirect, render_template, request, url_for, from db import get_connection, init_db, from validation import validate_post
+- **Zeilen:** 62
+- **Imports:** os, from contextlib import closing, from flask import Flask, redirect, render_template, request, url_for, from db import get_connection, from validation import validate_post
 - **Funktionen:** create_app, main, index, new_post, create_post
 
 ### `src/blog/db.py`
 
 - **Typ:** Python-Modul
-- **Zeilen:** 33
-- **Imports:** sqlite3, from contextlib import closing, from pathlib import Path
-- **Funktionen:** get_db_path, get_connection, init_db
+- **Zeilen:** 18
+- **Imports:** sqlite3, from pathlib import Path
+- **Funktionen:** get_db_path, get_connection
 
 ### `src/blog/templates/index.html`
 
@@ -144,15 +162,22 @@
 ### `tests/conftest.py`
 
 - **Typ:** Python-Modul
-- **Zeilen:** 20
-- **Imports:** pytest, from blog.app import create_app
-- **Funktionen:** app, client
+- **Zeilen:** 34
+- **Imports:** pytest, from yoyo import get_backend, read_migrations, from blog.app import create_app
+- **Funktionen:** apply_migrations, app, client
 
 ### `tests/test_app.py`
 
 - **Typ:** Python-Modul
 - **Zeilen:** 18
 - **Funktionen:** test_startseite, test_neuer_post, test_post_erstellen
+
+### `tests/test_migrations.py`
+
+- **Typ:** Python-Modul
+- **Zeilen:** 38
+- **Imports:** from contextlib import closing, from yoyo import get_backend, read_migrations, from blog.db import get_connection
+- **Funktionen:** test_leere_datenbank_kann_migriert_werden, test_erneute_migration_erhaelt_daten
 
 ### `tests/test_post_routes.py`
 
@@ -171,5 +196,5 @@
 ### `uv.lock`
 
 - **Typ:** Datei (.lock)
-- **Zeilen:** 515
+- **Zeilen:** 571
 - **Erste Inhaltszeile:** version = 1
