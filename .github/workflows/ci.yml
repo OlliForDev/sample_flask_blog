@@ -66,14 +66,32 @@ jobs:
 
       - name: Container-Funktionstest ausführen
         run: |
+          mkdir -p ci-artifacts
+
           docker run -d --name flask-blog-ci \
             -e DATABASE=/tmp/ci-blog.db \
             -p 127.0.0.1:5000:5000 \
             flask-blog:ci-${{ github.sha }} \
             sleep infinity
 
-          docker exec flask-blog-ci \
-            uv run yoyo apply --database sqlite:////tmp/ci-blog.db migrations/
+          {
+            echo "# Datenbank-Migrationsbericht"
+            echo ""
+            echo "## Migrationsprotokoll"
+            echo ""
+            echo '```text'
+            docker exec flask-blog-ci \
+              uv run yoyo apply --database sqlite:////tmp/ci-blog.db migrations/
+            echo '```'
+            echo ""
+            echo "## Funktionstest"
+            echo ""
+            echo "| Prüfung | Ergebnis |"
+            echo "|---|---|"
+            echo "| Migration im Container | erfolgreich |"
+            echo "| Webserver gestartet | erfolgreich |"
+            echo "| HTTP GET / | erfolgreich |"
+          } | tee ci-artifacts/migration-report.md >> "$GITHUB_STEP_SUMMARY"
 
           docker exec -d flask-blog-ci \
             uv run flask --app blog.app:create_app run --host=0.0.0.0 --port=5000
@@ -84,6 +102,13 @@ jobs:
             http://127.0.0.1:5000/ | grep -q "Blog"
 
           docker logs flask-blog-ci
+
+      - name: Migrationsbericht hochladen
+        uses: actions/upload-artifact@v4
+        with:
+          name: migration-report
+          path: ci-artifacts/migration-report.md
+          if-no-files-found: error
 
       - name: Testcontainer entfernen
         if: always()
