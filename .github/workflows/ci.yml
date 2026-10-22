@@ -29,7 +29,7 @@ jobs:
           enable-cache: true
 
       - name: Abhängigkeiten installieren
-        run: uv sync --frozen
+        run: uv sync --locked
 
       - name: Codequalität mit Ruff prüfen
         run: uv run ruff check .
@@ -55,3 +55,28 @@ jobs:
           tags: flask-blog:ci-${{ github.sha }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
+
+      - name: Container-Funktionstest ausführen
+        run: |
+          docker run -d --name flask-blog-ci \
+            -e DATABASE=/tmp/ci-blog.db \
+            -p 127.0.0.1:5000:5000 \
+            flask-blog:ci-${{ github.sha }} \
+            sleep infinity
+
+          docker exec flask-blog-ci \
+            uv run yoyo apply --database sqlite:////tmp/ci-blog.db migrations/
+
+          docker exec -d flask-blog-ci \
+            uv run flask --app blog.app:create_app run --host=0.0.0.0 --port=5000
+
+          sleep 3
+
+          curl --fail --silent --show-error \
+            http://127.0.0.1:5000/ | grep -q "Blog"
+
+          docker logs flask-blog-ci
+
+      - name: Testcontainer entfernen
+        if: always()
+        run: docker rm -f flask-blog-ci

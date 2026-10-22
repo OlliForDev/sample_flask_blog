@@ -1,23 +1,22 @@
+import os
 from contextlib import closing
 
 from flask import Flask, redirect, render_template, request, url_for
 
-from .db import get_connection, init_db
+from .db import get_connection
 from .validation import validate_post
 
 
 def create_app(test_config=None):
     app = Flask(__name__, instance_relative_config=True)
+
     app.config.from_mapping(
         SECRET_KEY="dev",
-        DATABASE=None,
+        DATABASE=os.environ.get("DATABASE"),
     )
 
     if test_config:
         app.config.update(test_config)
-
-    if app.config.get("DATABASE"):
-        init_db(app)
 
     @app.get("/")
     def index():

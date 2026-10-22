@@ -3,8 +3,7 @@ name = "sample-flask-blog"
 version = "0.1.0"
 description = "Mini-Blog für die CI/CD-Fallstudie"
 requires-python = ">=3.11"
-dependencies = ["flask>=3.1"]
-
+dependencies = ["flask>=3.1", "yoyo-migrations>=9.0"]
 [dependency-groups]
 dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.8"]
 
@@ -22,6 +21,11 @@ packages = ["src/blog"]
 testpaths = ["tests"]
 pythonpath = ["src"]
 addopts = "-ra --tb=short --cov=src/blog --cov-report=term-missing"
+#Die Warnungen stammen aus Yoyo bzw. der SQLite-Adapter-Deprecation unter Python 3.12+
+filterwarnings = [
+    "ignore:The default datetime adapter is deprecated:DeprecationWarning",
+    "ignore:unclosed database in <sqlite3.Connection object at:ResourceWarning",
+]
 
 [tool.coverage.run]
 source = ["src/blog"]

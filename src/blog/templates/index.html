@@ -1,32 +1,56 @@
 <!DOCTYPE html>
 <!-- Startseiten Template für den Mini-Blog mit Region für Posts -->
 <html>
+
 <head>
     <title>Mini Blog</title>
     <style>
-        body { font-family: sans-serif; padding: 20px; background-color: #f4f7f9; }
-        .post { 
-            border: 1px solid #ddd; 
-            padding: 15px; 
-            margin-bottom: 15px; 
-            border-radius: 8px; 
-            background-color: white;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        body {
+            font-family: sans-serif;
+            padding: 20px;
+            background-color: #f4f7f9;
         }
-        .post h3 { color: #333; margin-top: 0; }
-        .top { 
-            display: flex; 
-            justify-content: space-between; 
-            align-items: center; 
-            border-bottom: 2px solid #007bff; 
+
+        .post {
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        }
+
+        .post h3 {
+            color: #333;
+            margin-top: 0;
+        }
+
+        .top {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid #007bff;
             margin-bottom: 20px;
             padding-bottom: 10px;
         }
-        .top h1 { margin: 0; }
-        a { text-decoration: none; color: #007bff; font-weight: bold; }
-        a:hover { text-decoration: underline; color: #0056b3; }
+
+        .top h1 {
+            margin: 0;
+        }
+
+        a {
+            text-decoration: none;
+            color: #007bff;
+            font-weight: bold;
+        }
+
+        a:hover {
+            text-decoration: underline;
+            color: #0056b3;
+        }
     </style>
 </head>
+
 <body>
 
     <div class="top">
@@ -46,4 +70,5 @@
     {% endif %}
 
 </body>
+
 </html>
