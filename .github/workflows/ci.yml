@@ -74,23 +74,17 @@ jobs:
             flask-blog:ci-${{ github.sha }} \
             sleep infinity
 
+          docker exec flask-blog-ci sh -c \
+            'uv run yoyo apply --database sqlite:////tmp/ci-blog.db migrations/ > /tmp/migration.log 2>&1'
+
           {
             echo "# Datenbank-Migrationsbericht"
             echo ""
             echo "## Migrationsprotokoll"
             echo ""
             echo '```text'
-            docker exec flask-blog-ci \
-              uv run yoyo apply --database sqlite:////tmp/ci-blog.db migrations/
+            docker exec flask-blog-ci cat /tmp/migration.log
             echo '```'
-            echo ""
-            echo "## Funktionstest"
-            echo ""
-            echo "| Prüfung | Ergebnis |"
-            echo "|---|---|"
-            echo "| Migration im Container | erfolgreich |"
-            echo "| Webserver gestartet | erfolgreich |"
-            echo "| HTTP GET / | erfolgreich |"
           } | tee ci-artifacts/migration-report.md >> "$GITHUB_STEP_SUMMARY"
 
           docker exec -d flask-blog-ci \
@@ -100,6 +94,17 @@ jobs:
 
           curl --fail --silent --show-error \
             http://127.0.0.1:5000/ | grep -q "Blog"
+
+          {
+            echo ""
+            echo "## Funktionstest"
+            echo ""
+            echo "| Prüfung | Ergebnis |"
+            echo "|---|---|"
+            echo "| Migration im Container | erfolgreich |"
+            echo "| Webserver gestartet | erfolgreich |"
+            echo "| HTTP GET / | erfolgreich |"
+          } | tee -a ci-artifacts/migration-report.md >> "$GITHUB_STEP_SUMMARY"
 
           docker logs flask-blog-ci
 
