@@ -68,14 +68,16 @@ jobs:
         run: |
           mkdir -p ci-artifacts
 
+
           docker run -d --name flask-blog-ci \
             -e DATABASE=/tmp/ci-blog.db \
             -p 127.0.0.1:5000:5000 \
             flask-blog:ci-${{ github.sha }} \
             sleep infinity
 
+
           docker exec flask-blog-ci sh -c \
-            'uv run yoyo apply --database sqlite:////tmp/ci-blog.db migrations/ > /tmp/migration.log 2>&1'
+            'yoyo -vv --batch --no-config-file apply --database sqlite:////tmp/ci-blog.db migrations/ > /tmp/migration.log 2>&1'
 
           {
             echo "# Datenbank-Migrationsbericht"
@@ -88,7 +90,9 @@ jobs:
           } | tee ci-artifacts/migration-report.md >> "$GITHUB_STEP_SUMMARY"
 
           docker exec -d flask-blog-ci \
-            uv run flask --app blog.app:create_app run --host=0.0.0.0 --port=5000
+            python -m flask --app blog.app:create_app run \
+              --host=0.0.0.0 --port=5000
+
 
           sleep 3
 
