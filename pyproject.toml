@@ -3,7 +3,7 @@ name = "sample-flask-blog"
 version = "0.1.0"
 description = "Mini-Blog für die CI/CD-Fallstudie"
 requires-python = ">=3.11"
-dependencies = ["flask>=3.1", "yoyo-migrations>=9.0"]
+dependencies = ["flask>=3.1", "gunicorn>=26.2.0", "yoyo-migrations>=9.0"]
 [dependency-groups]
 dev = ["pytest>=8.0", "pytest-cov>=5.0", "ruff>=0.8"]
 

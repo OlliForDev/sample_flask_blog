@@ -93,6 +93,13 @@ jobs:
             python -m flask --app blog.app:create_app run \
               --host=0.0.0.0 --port=5000
 
+            docker exec -d flask-blog-ci \
+              gunicorn \
+                --bind 0.0.0.0:5000 \
+                --access-logfile - \
+                --error-logfile - \
+                "blog.app:create_app()"
+
 
           sleep 3
 
