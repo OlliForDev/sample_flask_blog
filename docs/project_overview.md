@@ -3,9 +3,9 @@
 ## Metadaten
 
 - projekt_pfad: `/Users/rechenzentrum/Dev/bsc_SWE/DLBSEPDOCD01_D/sample_flask_blog`
-- erstellt_am: 2026-10-22 22:59:08
-- anzahl_dateien: 21
-- anzahl_zeilen_gesamt: 1262
+- erstellt_am: 2026-10-25 14:25:50
+- anzahl_dateien: 22
+- anzahl_zeilen_gesamt: 1280
 
 ## Einstiegspunkte
 
@@ -42,6 +42,7 @@
 │   │   ├── db.py
 │   │   └── validation.py
 │   ├── instance
+│   │   └── blog.db
 │   └── .DS_Store
 ├── tests
 │   ├── conftest.py
@@ -58,9 +59,10 @@
 ├── Dockerfile
 ├── pyproject.toml
 ├── README.md
-└── uv.lock
+├── uv.lock
+└── yoyo.ini
 
-9 directories, 26 files
+9 directories, 28 files
 ```
 
 ## Dateibeschreibungen
@@ -196,5 +198,11 @@
 ### `uv.lock`
 
 - **Typ:** Datei (.lock)
-- **Zeilen:** 571
+- **Zeilen:** 582
 - **Erste Inhaltszeile:** version = 1
+
+### `yoyo.ini`
+
+- **Typ:** INI-Konfiguration
+- **Zeilen:** 7
+- **Erste Inhaltszeile:** [DEFAULT]
