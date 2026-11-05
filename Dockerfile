@@ -20,6 +20,10 @@ RUN uv sync --locked --no-dev --no-install-project --no-cache
 COPY src/blog ./src/blog
 COPY migrations ./migrations
 
+# Startskript für Migration + Gunicorn
+COPY docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh
+
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--access-logfile", "-", "--error-logfile", "-", "blog.app:create_app()"]
+ENTRYPOINT ["docker-entrypoint.sh"]
