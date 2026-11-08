@@ -1,12 +1,14 @@
 name: CI
 
 on:
-  push:
-    branches:
-      - main
-      - develop
   pull_request:
     branches:
+      - staging
+      - main
+
+  push:
+    branches:
+      - staging
       - main
 
 jobs:
@@ -66,65 +68,70 @@ jobs:
 
       - name: Container-Funktionstest ausführen
         run: |
+          set -euo pipefail
           mkdir -p ci-artifacts
 
+          diagnostics() {
+            docker logs flask-blog-ci > ci-artifacts/container.log 2>&1 || true
+            cat ci-artifacts/container.log
+            docker inspect flask-blog-ci \
+              --format '{{json .State}}' || true
+          }
+          trap diagnostics EXIT
 
           docker run -d --name flask-blog-ci \
-            -e DATABASE=/tmp/ci-blog.db \
+            -e APP_MODULE="blog.app:create_app()" \
+            -e SQLITE_PATH=/tmp/ci-blog.db \
+            -e GUNICORN_WORKERS=1 \
+            -e GUNICORN_TIMEOUT=60 \
+            -e PORT=5000 \
+            -e FLASK_DEBUG=0 \
             -p 127.0.0.1:5000:5000 \
-            flask-blog:ci-${{ github.sha }} \
-            sleep infinity
+            flask-blog:ci-${{ github.sha }}
 
+          ready=false
 
-          docker exec flask-blog-ci sh -c \
-            'yoyo -vv --batch --no-config-file apply --database sqlite:////tmp/ci-blog.db migrations/ > /tmp/migration.log 2>&1'
+          for attempt in $(seq 1 30); do
+            if curl --fail --silent --show-error \
+              --max-time 2 \
+              http://127.0.0.1:5000/ \
+              -o ci-artifacts/homepage.html; then
+              ready=true
+              break
+            fi
 
-          {
-            echo "# Datenbank-Migrationsbericht"
-            echo ""
-            echo "## Migrationsprotokoll"
-            echo ""
-            echo '```text'
-            docker exec flask-blog-ci cat /tmp/migration.log
-            echo '```'
-          } | tee ci-artifacts/migration-report.md >> "$GITHUB_STEP_SUMMARY"
+            if [ "$(docker inspect --format '{{.State.Running}}' flask-blog-ci)" != "true" ]; then
+              echo "Container wurde vorzeitig beendet."
+              exit 1
+            fi
 
-          docker exec -d flask-blog-ci \
-            python -m flask --app blog.app:create_app run \
-              --host=0.0.0.0 --port=5000
+            sleep 2
+          done
 
-            docker exec -d flask-blog-ci \
-              gunicorn \
-                --bind 0.0.0.0:5000 \
-                --access-logfile - \
-                --error-logfile - \
-                "blog.app:create_app()"
+          if [ "$ready" != "true" ]; then
+            echo "Anwendung wurde nicht rechtzeitig erreichbar."
+            exit 1
+          fi
 
-
-          sleep 3
-
-          curl --fail --silent --show-error \
-            http://127.0.0.1:5000/ | grep -q "Blog"
+          grep -q "Blog" ci-artifacts/homepage.html
 
           {
-            echo ""
-            echo "## Funktionstest"
+            echo "# Container-Funktionstest"
             echo ""
             echo "| Prüfung | Ergebnis |"
             echo "|---|---|"
-            echo "| Migration im Container | erfolgreich |"
-            echo "| Webserver gestartet | erfolgreich |"
+            echo "| Containerstart über Entrypoint | erfolgreich |"
             echo "| HTTP GET / | erfolgreich |"
-          } | tee -a ci-artifacts/migration-report.md >> "$GITHUB_STEP_SUMMARY"
+            echo "| Startseite enthält Blog | erfolgreich |"
+          } | tee ci-artifacts/migration-report.md >> "$GITHUB_STEP_SUMMARY"
 
-          docker logs flask-blog-ci
-
-      - name: Migrationsbericht hochladen
+      - name: Container-Testberichte hochladen
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: migration-report
-          path: ci-artifacts/migration-report.md
-          if-no-files-found: error
+          name: container-test-report
+          path: ci-artifacts/
+          if-no-files-found: warn
 
       - name: Testcontainer entfernen
         if: always()

@@ -12,7 +12,7 @@ def create_app(test_config=None):
 
     app.config.from_mapping(
         SECRET_KEY="dev",
-        DATABASE=os.environ.get("DATABASE"),
+        DATABASE=os.environ.get("SQLITE_PATH"),
     )
 
     if test_config:
