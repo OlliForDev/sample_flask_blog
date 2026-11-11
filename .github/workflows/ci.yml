@@ -136,3 +136,50 @@ jobs:
       - name: Testcontainer entfernen
         if: always()
         run: docker rm -f flask-blog-ci
+
+  deploy-production:
+    name: Production freigeben und Deploy auslösen
+    needs: quality
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+
+    permissions: {}
+
+    environment:
+      name: production
+
+    concurrency:
+      group: production-deploy
+      cancel-in-progress: false
+
+    steps:
+      - name: Geprüften Commit auf Render deployen
+        env:
+          RENDER_DEPLOY_HOOK_URL: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+          DEPLOY_COMMIT: ${{ github.sha }}
+        run: |
+          set -euo pipefail
+
+          if [ -z "$RENDER_DEPLOY_HOOK_URL" ]; then
+            echo "Das Environment-Secret RENDER_DEPLOY_HOOK_URL fehlt."
+            exit 1
+          fi
+
+          echo "Deployment für Commit $DEPLOY_COMMIT wird angefordert."
+
+          curl --fail --silent --show-error \
+            --connect-timeout 10 \
+            --max-time 60 \
+            --get \
+            --data-urlencode "ref=$DEPLOY_COMMIT" \
+            "$RENDER_DEPLOY_HOOK_URL" \
+            --output /dev/null
+
+          {
+            echo "## Production-Deployment angefordert"
+            echo ""
+            echo "Commit: $DEPLOY_COMMIT"
+            echo ""
+            echo "Render hat die Anfrage akzeptiert."
+            echo "Build- und Deployment-Erfolg im Render-Dashboard prüfen."
+          } >> "$GITHUB_STEP_SUMMARY"
