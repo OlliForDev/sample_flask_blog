@@ -3,9 +3,9 @@
 ## Metadaten
 
 - projekt_pfad: `/Users/rechenzentrum/Dev/bsc_SWE/DLBSEPDOCD01_D/sample_flask_blog`
-- erstellt_am: 2026-10-25 14:25:50
-- anzahl_dateien: 22
-- anzahl_zeilen_gesamt: 1280
+- erstellt_am: 2026-11-15 14:11:38
+- anzahl_dateien: 23
+- anzahl_zeilen_gesamt: 1327
 
 ## Einstiegspunkte
 
@@ -56,13 +56,14 @@
 ├── .gitignore
 ├── .pre-commit-config.yaml
 ├── .python-version
+├── docker-entrypoint.sh
 ├── Dockerfile
 ├── pyproject.toml
 ├── README.md
 ├── uv.lock
 └── yoyo.ini
 
-9 directories, 28 files
+9 directories, 29 files
 ```
 
 ## Dateibeschreibungen
@@ -75,7 +76,7 @@
 ### `.gitignore`
 
 - **Typ:** Datei (ohne Erweiterung)
-- **Zeilen:** 17
+- **Zeilen:** 18
 - **Erste Inhaltszeile:** .venv/
 
 ### `.pre-commit-config.yaml`
@@ -93,7 +94,7 @@
 ### `Dockerfile`
 
 - **Typ:** Docker-Konfiguration
-- **Zeilen:** 25
+- **Zeilen:** 29
 - **Erste Inhaltszeile:** FROM python:3.13-slim
 
 ### `README.md`
@@ -101,6 +102,12 @@
 - **Typ:** Markdown-Dokumentation
 - **Zeilen:** 94
 - **Erste Inhaltszeile:** # Sample Flask Blog
+
+### `docker-entrypoint.sh`
+
+- **Typ:** Shell-Skript
+- **Zeilen:** 13
+- **Erste Inhaltszeile:** #!/bin/sh
 
 ### `migrations/001_create_posts.py`
 
@@ -150,7 +157,7 @@
 ### `src/blog/templates/new.html`
 
 - **Typ:** HTML-Datei
-- **Zeilen:** 54
+- **Zeilen:** 83
 - **Kommentare:** 1 gefunden
   - Seite um neue Posts zu erstellen
 
