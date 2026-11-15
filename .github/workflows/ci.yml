@@ -183,3 +183,27 @@ jobs:
             echo "Render hat die Anfrage akzeptiert."
             echo "Build- und Deployment-Erfolg im Render-Dashboard prüfen."
           } >> "$GITHUB_STEP_SUMMARY"
+
+  release-source:
+    name: Release source policy
+    if: github.event_name == 'pull_request' && github.base_ref == 'main'
+    runs-on: ubuntu-latest
+
+    permissions: {}
+
+    steps:
+      - name: Nur staging als Quelle für main erlauben
+        env:
+          SOURCE_BRANCH: ${{ github.head_ref }}
+          SOURCE_REPOSITORY: ${{ github.event.pull_request.head.repo.full_name }}
+          TARGET_REPOSITORY: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+
+          if [ "$SOURCE_BRANCH" != "staging" ] || \
+             [ "$SOURCE_REPOSITORY" != "$TARGET_REPOSITORY" ]; then
+            echo "::error::Nach main dürfen nur Pull Requests aus staging desselben Repositorys gemergt werden."
+            exit 1
+          fi
+
+          echo "Erlaubter Release-Weg: staging → main"
