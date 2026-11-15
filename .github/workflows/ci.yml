@@ -138,7 +138,7 @@ jobs:
         run: docker rm -f flask-blog-ci
 
   deploy-production:
-    name: Production freigeben und Deploy auslösen
+    name: Production freigeben und Deployment auslösen
     needs: quality
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
